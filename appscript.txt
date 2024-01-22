@@ -1,0 +1,12 @@
+function doGet(e) {
+  var sheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1KMlcnBD4CnjvmotS8Dt5OJAo_d8Fzy69_nlIOjPpcfE/edit?usp=sharing').getActiveSheet();
+  var data = sheet.getRange("A1").getValue();
+  return ContentService.createTextOutput(JSON.stringify({ data: data })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1KMlcnBD4CnjvmotS8Dt5OJAo_d8Fzy69_nlIOjPpcfE/edit?usp=sharing').getActiveSheet();
+  var postData = e.parameter.params;
+  sheet.getRange("A1").setValue(postData);
+  return ContentService.createTextOutput(JSON.stringify({ message: "Data written successfully" })).setMimeType(ContentService.MimeType.JSON);
+}
