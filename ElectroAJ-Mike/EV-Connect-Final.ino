@@ -20,7 +20,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", offsetTime);
 unsigned long myChannelNumber = 2414065; //Input Your ChannelID Number
 const char * myWriteAPIKey = "ZR6MNLARH296BDLM"; //Input Your API_Key ThinkSpeak
 
-String GOOGLE_SCRIPT_ID = "AKfycbzNPVabOUt6ZOOCm4OgNpWVbeoLGB1_av_Wkl9KJ-cpr1nf6kSJKG6U0FSOGvgfIh4s";
+String GOOGLE_SCRIPT_ID = "AKfycbyrqN0q7eGq-flVycA9DDqwKf-Nyuz0W3sCXc1BtLhRhl85vsCPlI5qSWx1d78Bc4k_";
 #define Control_Electric 32
 #define Status_Green 33
 #define Status_Yellow 25
@@ -33,6 +33,8 @@ int hour;
 int minute;
 int second;
 int count = 0;
+float vol;
+float amp;
 
 void setupWiFi();
 void charging();
@@ -72,7 +74,7 @@ void setup() {
   Serial.print(F("Time Begin : "));
   Serial.println(timeClient.getFormattedTime());
   delay(5000);
-  lcd.clear();
+  // lcd.clear();
 }
 
 void loop() {
@@ -83,9 +85,9 @@ void loop() {
   second = timeClient.getSeconds();
   Serial.println(F("Time Begin : "));
   Serial.println(timeClient.getFormattedTime());
+  // sendThing(11, 22, 33, 44); //Test Send Data To Thinkspeak
   //เรียกใช้ฟังชั่น
   getDataFromGoogleSheets();
-
 }
 
 
@@ -189,10 +191,13 @@ void worked(String minutes) {
 }
 
 void charging(int second) {
+  lcd.clear();
   digitalWrite(Control_Electric, LOW);
   digitalWrite(Status_Green, LOW);
   digitalWrite(Status_Yellow, HIGH);
   digitalWrite(Status_Red, HIGH);
+  sendThing(second);
+  delay(1000);
   Serial.println("Charging!");
   lcd.setCursor(5, 0);
   lcd.print("EV Connect");
@@ -202,10 +207,10 @@ void charging(int second) {
   // lcd.print("     Seconds");
   lcd.setCursor(3, 3);
   lcd.print("-- Charging --");
-  readpzem(second);
 }
 
 void nocharging() {
+  lcd.clear();
   Serial.println("No Charging!");
   lcd.setCursor(5, 0);
   lcd.print("EV Connect");
@@ -259,55 +264,13 @@ void sendDataNull(String params) {
   http.end();
 }
 
-void readpzem(int second) {
-    // Print the custom address of the PZEM
-    Serial.print("Custom Address:");
-    Serial.println(pzem.readAddress(), HEX);
-
-    // Read the data from the sensor
-    float voltage = pzem.voltage();
-    float current = pzem.current();
-    float power = pzem.power();
-    float energy = pzem.energy();
-    float frequency = pzem.frequency();
-    float pf = pzem.pf();
-
-    // Check if the data is valid
-    if(isnan(voltage)){
-        Serial.println("Error reading voltage");
-    } else if (isnan(current)) {
-        Serial.println("Error reading current");
-    } else if (isnan(power)) {
-        Serial.println("Error reading power");
-    } else if (isnan(energy)) {
-        Serial.println("Error reading energy");
-    } else if (isnan(frequency)) {
-        Serial.println("Error reading frequency");
-    } else if (isnan(pf)) {
-        Serial.println("Error reading power factor");
-    } else {
-
-        // Print the values to the Serial console
-        Serial.print("Voltage: ");      Serial.print(voltage);      Serial.println("V");
-        Serial.print("Current: ");      Serial.print(current);      Serial.println("A");
-        Serial.print("Power: ");        Serial.print(power);        Serial.println("W");
-        Serial.print("Energy: ");       Serial.print(energy,3);     Serial.println("kWh");
-        Serial.print("Frequency: ");    Serial.print(frequency, 1); Serial.println("Hz");
-        Serial.print("PF: ");           Serial.println(pf);
-        sendThing(second, voltage, current, power);
-    }
-
-    Serial.println();
-    delay(2000);
-}
-
-void sendThing(int second, float voltage, float current, float power){
+void sendThing(int second){
   Serial.print("\n Sending Data");
 
   ThingSpeak.setField(1, second);
-  ThingSpeak.setField(2, voltage); 
-  ThingSpeak.setField(3, current);
-  ThingSpeak.setField(4, power);
+  // ThingSpeak.setField(2, voltage); 
+  // ThingSpeak.setField(3, current);
+  // ThingSpeak.setField(4, power);
   // delay(1000);
   ThingSpeak.setStatus(myStatus);
 
