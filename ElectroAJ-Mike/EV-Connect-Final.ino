@@ -17,10 +17,10 @@ WiFiUDP ntpUDP;
 const long offsetTime = 25200;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", offsetTime);
 
-unsigned long myChannelNumber = 2414065; //Input Your ChannelID Number
-const char * myWriteAPIKey = "ZR6MNLARH296BDLM"; //Input Your API_Key ThinkSpeak
+unsigned long myChannelNumber = ChannelNum; //Input Your ChannelID Number
+const char * myWriteAPIKey = "API_KEY"; //Input Your API_Key ThinkSpeak
 
-String GOOGLE_SCRIPT_ID = "AKfycbyrqN0q7eGq-flVycA9DDqwKf-Nyuz0W3sCXc1BtLhRhl85vsCPlI5qSWx1d78Bc4k_";
+String GOOGLE_SCRIPT_ID = "ID_SCRIPT";
 #define Control_Electric 32
 #define Status_Green 33
 #define Status_Yellow 25
@@ -192,10 +192,10 @@ void worked(String minutes) {
 
 void charging(int second) {
   lcd.clear();
-  digitalWrite(Control_Electric, LOW);
-  digitalWrite(Status_Green, LOW);
-  digitalWrite(Status_Yellow, HIGH);
-  digitalWrite(Status_Red, HIGH);
+  digitalWrite(Control_Electric, HIGH);
+  digitalWrite(Status_Green, HIGH);
+  digitalWrite(Status_Yellow, LOW);
+  digitalWrite(Status_Red, LOW);
   sendThing(second);
   delay(1000);
   Serial.println("Charging!");
@@ -220,20 +220,20 @@ void nocharging() {
   // lcd.print("Scan QRcode..");
   lcd.setCursor(1, 3);
   lcd.print("-- No Charging --");
-  digitalWrite(Control_Electric, HIGH);
-  digitalWrite(Status_Green, HIGH);
-  digitalWrite(Status_Yellow, LOW);
-  digitalWrite(Status_Red, HIGH);
+  digitalWrite(Control_Electric, LOW);
+  digitalWrite(Status_Green, LOW);
+  digitalWrite(Status_Yellow, HIGH);
+  digitalWrite(Status_Red, LOW);
 }
 
 void problemcharging() {
   lcd.clear();
   String params = "0";
   Serial.printf("Problem Charge!! \n");
-  digitalWrite(Control_Electric, HIGH);
-  digitalWrite(Status_Green, HIGH);
-  digitalWrite(Status_Yellow, HIGH);
-  digitalWrite(Status_Red, LOW);
+  digitalWrite(Control_Electric, LOW);
+  digitalWrite(Status_Green, LOW);
+  digitalWrite(Status_Yellow, LOW);
+  digitalWrite(Status_Red, HIGH);
   lcd.setCursor(5, 0);
   lcd.print("EV Connect");
   lcd.setCursor(5, 1);
